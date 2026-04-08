@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/rozoomcool/task-cli/internal/model"
 	"github.com/rozoomcool/task-cli/internal/storage"
 )
@@ -52,8 +54,32 @@ func (t *TaskRepository[T]) Add(entity T) (int, error) {
 }
 
 // Delete implements Repository.
-func (t *TaskRepository[T]) Delete(int) error {
-	panic("unimplemented")
+func (t *TaskRepository[T]) Delete(id int) error {
+	db, err := t.storage.ReadOrCreate()
+	if err != nil {
+		return err
+	}
+
+	newArray := []T{}
+	founded := false
+	for _, v := range db.Data {
+		if v.GetID() == id {
+			founded = true
+			continue
+		}
+		newArray = append(newArray, v)
+	}
+	if !founded {
+		return errors.New("Task not founded")
+	}
+	db.Data = newArray
+
+	err = t.storage.Commit(db)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // List implements Repository.

@@ -42,8 +42,8 @@ func (t *taskService) AddTask(description string) (int, error) {
 }
 
 // DeleteTask implements TaskService.
-func (t *taskService) DeleteTask(int) error {
-	panic("unimplemented")
+func (t *taskService) DeleteTask(id int) error {
+	return t.Repo.Delete(id)
 }
 
 // ListTasks implements TaskService.
