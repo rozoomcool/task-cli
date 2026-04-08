@@ -92,6 +92,31 @@ func (t *TaskRepository[T]) List() ([]T, error) {
 }
 
 // Update implements Repository.
-func (t *TaskRepository[T]) Update(int, T) error {
-	panic("unimplemented")
+func (t *TaskRepository[T]) Update(id int, newEntity T) error {
+	db, err := t.storage.ReadOrCreate()
+	if err != nil {
+		return err
+	}
+
+	newArray := []T{}
+	founded := false
+	for _, v := range db.Data {
+		if v.GetID() == id {
+			founded = true
+			newArray = append(newArray, newEntity)
+			continue
+		}
+		newArray = append(newArray, v)
+	}
+	if !founded {
+		return errors.New("Task not founded")
+	}
+	db.Data = newArray
+
+	err = t.storage.Commit(db)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

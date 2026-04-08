@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"time"
 
 	"github.com/rozoomcool/task-cli/internal/model"
@@ -11,7 +12,7 @@ type TaskService interface {
 	AddTask(string) (int, error)
 	ListTasks(model.TaskStatus) ([]*model.Task, error)
 	DeleteTask(int) error
-	UpdatedTask(int, string, string) error
+	UpdatedTask(int, string, model.TaskStatus) error
 }
 
 type taskService struct {
@@ -68,6 +69,30 @@ func (t *taskService) ListTasks(status model.TaskStatus) ([]*model.Task, error) 
 }
 
 // UpdatedTask implements TaskService.
-func (t *taskService) UpdatedTask(int, string, string) error {
-	panic("unimplemented")
+func (t *taskService) UpdatedTask(id int, description string, status model.TaskStatus) error {
+	tasks, err := t.Repo.List()
+	if err != nil {
+		return err
+	}
+
+	var entity *model.Task
+	for _, v := range tasks {
+		if v.GetID() == id {
+			entity = v
+			break
+		}
+	}
+	if entity == nil {
+		return errors.New("Task not found")
+	}
+
+	if description != "" {
+		entity.Description = description
+	}
+
+	if status != "" {
+		entity.Status = status
+	}
+
+	return t.Repo.Update(id, entity)
 }
