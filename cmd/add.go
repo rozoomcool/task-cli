@@ -5,8 +5,10 @@ package cmd
 
 import (
 	"fmt"
+	"time"
 
-	"github.com/rozoomcool/task-cli/internal/task"
+	"github.com/rozoomcool/task-cli/internal/model"
+	"github.com/rozoomcool/task-cli/internal/repository"
 	"github.com/spf13/cobra"
 )
 
@@ -23,13 +25,25 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) > 0 {
 			description := args[0]
-			id, err := task.AddTask(description)
-			if err != nil {
-				fmt.Println("Unable to add task: ", err)
-			} else {
-				fmt.Printf("Task added successfully (ID: %d)\n", id)
+			if description == "" {
+				fmt.Println("Empty description")
+				return
 			}
-
+			taskRepo := repository.GetTaskRepository()
+			newTask := model.Task{
+				Description: description,
+				Status:      model.TaskStatusToDo,
+				CreatedAt:   time.Now(),
+				UpdatedAt:   time.Now(),
+			}
+			id, err := taskRepo.Add(&newTask)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			fmt.Printf("Task added successfully (ID: %d)\n", id)
+		} else {
+			fmt.Println("Add task description")
 		}
 	},
 }
