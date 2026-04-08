@@ -63,7 +63,7 @@ func (ts *TaskFsStorage) Write(data *StorageWrapper[*model.Task]) error {
 	if err != nil {
 		return err
 	}
-	file, err := os.OpenFile(filePath, os.O_WRONLY, 0666)
+	file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_TRUNC, 0666)
 	if err != nil {
 		return err
 	}
