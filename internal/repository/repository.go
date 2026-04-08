@@ -58,7 +58,11 @@ func (t *TaskRepository[T]) Delete(int) error {
 
 // List implements Repository.
 func (t *TaskRepository[T]) List() ([]T, error) {
-	panic("unimplemented")
+	db, err := t.storage.ReadOrCreate()
+	if err != nil {
+		return nil, err
+	}
+	return db.Data, nil
 }
 
 // Update implements Repository.

@@ -5,10 +5,8 @@ package cmd
 
 import (
 	"fmt"
-	"time"
 
-	"github.com/rozoomcool/task-cli/internal/model"
-	"github.com/rozoomcool/task-cli/internal/repository"
+	"github.com/rozoomcool/task-cli/internal/service"
 	"github.com/spf13/cobra"
 )
 
@@ -29,14 +27,8 @@ to quickly create a Cobra application.`,
 				fmt.Println("Empty description")
 				return
 			}
-			taskRepo := repository.GetTaskRepository()
-			newTask := model.Task{
-				Description: description,
-				Status:      model.TaskStatusToDo,
-				CreatedAt:   time.Now(),
-				UpdatedAt:   time.Now(),
-			}
-			id, err := taskRepo.Add(&newTask)
+			taskService := service.NewTaskService()
+			id, err := taskService.AddTask(description)
 			if err != nil {
 				fmt.Println(err)
 				return

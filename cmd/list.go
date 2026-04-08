@@ -4,6 +4,10 @@ Copyright © 2026 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
+
+	"github.com/rozoomcool/task-cli/internal/model"
+	"github.com/rozoomcool/task-cli/internal/service"
 	"github.com/spf13/cobra"
 )
 
@@ -18,30 +22,22 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// arg := ""
-		// status := ""
-		// if len(args) > 0 {
-		// 	arg = args[0]
-		// }
-		// switch arg {
-		// case "todo":
-		// 	status = "todo"
-		// case "in-progress":
-		// 	status = "in-progress"
-		// case "done":
-		// 	status = "done"
-		// default:
-		// 	status = ""
-		// }
-		// tasks, err := task.ListTask(task.TaskStatus(status))
-		// if err != nil {
-		// 	fmt.Println(err)
-		// 	return
-		// }
-		// DDMMYYYYhhmm := "2006-01-02 15:04"
-		// for _, v := range tasks {
-		// 	fmt.Printf("%v | %v\t| %v\t| %v | %v\n", v.Id, v.Description, v.Status, v.CreatedAt.Local().Format(DDMMYYYYhhmm), v.UpdatedAt.Local().Format(DDMMYYYYhhmm))
-		// }
+		status := ""
+		if len(args) > 0 {
+			status = args[0]
+		}
+
+		tasksService := service.NewTaskService()
+
+		tasks, err := tasksService.ListTasks(model.TaskStatus(status))
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		DDMMYYYYhhmm := "2006-01-02 15:04"
+		for _, v := range tasks {
+			fmt.Printf("%v | %v\t| %v\t| %v | %v\n", v.Id, v.Description, v.Status, v.CreatedAt.Local().Format(DDMMYYYYhhmm), v.UpdatedAt.Local().Format(DDMMYYYYhhmm))
+		}
 	},
 }
 
